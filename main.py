@@ -48,6 +48,79 @@ def fetch_stock_data():
     # Return the downloaded data table so it can be saved to a variable
 
 
+def calculate_metrics(data):
+    print()
+    print("Calculating daily percentage returns and rolling volatility")
+
+    close_prices = data['Close']
+
+    daily_returns = close_prices.pct_change() * 100
+    # Calculate daily percentage returns (how much the price changed compared to the previous day as a %)
+
+    
+    rolling_volatility = close_prices.pct_change().rolling(window=20).std() * 100
+    # Calculate rolling 20-day standard deviation (volatility)
+    # .rolling(window=20) looks at a 20-day moving window, and .std() calculates the standard deviation
+    
+    print()
+    print("Daily Returns Preview (First 5 rows):")
+    print(daily_returns.dropna().head())
+    # used dropna to remove all missing data
+   
+    print() 
+    print("Rolling 20-Day Volatility Preview (First 5 rows):")
+    print(rolling_volatility.dropna().head())
+    # used dropna because rows 1-19 would print NaN because rolling volatility needs a 20-day
+    # window of data to calculate standard deviation. 
+
+    return daily_returns, rolling_volatility
+
+
+def get_event_window(df, event_date, window_days=15):
+    """
+    Extracts stock data in a 30-day window (+/- window_days) around a specific comeback date.
+    """
+
+    print()
+    print(f"Extracting event window around comeback date: {event_date}")
+    
+    target_date = pd.to_datetime(event_date)
+    # Converts the input date string into a Pandas datetime object so it can match table dates
+    
+    start_window = target_date - pd.Timedelta(days=window_days)
+    end_window = target_date + pd.Timedelta(days=window_days)
+    # Calculates the start and end dates for the window (-15 days and +15 days)
+    # pandas timedelta helps you add and subtract dates (if not for this you would be 
+    # subtracting 15 days from May 15 which does not make sense)
+
+
+    window_data = df.loc[start_window:end_window]
+    # .loc[] = slice the DataFrame and grab only the rows falling inside this date range
+    # .loc lets you grab rows or columns by their actual names / labels
+
+    return window_data
+
+
 if __name__ == "__main__":
   df = fetch_stock_data()
   # Call the function from above and store the result inside df
+
+  returns, volatility = calculate_metrics(df)
+
+  # Interactive Comeback Window
+  print()
+  print("--- K-Quant Comeback Window Analyzer ---")
+  user_date = input("Enter a comeback date between Jan. 2023 - today (Format: YYYY-MM-DD): ")
+
+  # Checks if the user entered a date outside the dataset range
+  try:
+    comeback_slice = get_event_window(returns, event_date=user_date, window_days=15)
+
+    print()    
+    print(f"Results for {user_date} (Showing preview):")
+    print(comeback_slice.head())
+    print()
+    print(f"Total trading days captured in this window: {len(comeback_slice)}")
+        
+  except Exception as e:
+    print("Check your date format. Make sure it's YYYY-MM-DD and is after 2023 (until today).")
