@@ -22,10 +22,27 @@ def fetch_stock_data():
     # - start = "2023-01-01" tells it to pull data starting from January 1, 2023
     # - progress = False hides the loading bar in the terminal
 
+    data = data.dropna()
+    # Handles missing values (drops rows where markets were closed or data is missing)
+    # cleans data and stores it back into data variable 
+
+    code_to_name = {}
+    # Empty dictionary to hold swapped codes and names (because the printed data shows ticker codes
+    # instead of company names)
+
+    for name, code in tickers.items():
+        code_to_name[code] = name
+    # Makes the code the key, and the company name the value
+
+    data = data.rename(columns=code_to_name)
+    # Rename columns using Pandas .rename() method
+
+
     print()
     print("Data preview (First 5 rows):")
     print(data.head())
     # .head() prints just the first 5 rows of the data table to preview
+    # but stores all data from the start date up to today
 
     return data
     # Return the downloaded data table so it can be saved to a variable
