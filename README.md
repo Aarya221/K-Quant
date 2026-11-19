@@ -9,7 +9,7 @@ I want to know whether major K-pop entertainment stocks follow predictable patte
 
 Fetches historical daily stock prices including open, high, low, close, and volume for major entertainment agencies like HYBE, JYP, and YG. It then computes daily percentage returns to compare all agencies on an equal percentage scale alongside a rolling 20-day standard deviation to measure stock volatility and identify unusual price drops. Next, it runs a custom function to extract stock performance in a 30-day window ($\pm15$ days) around landmark group comebacks. Finally, it uses Matplotlib to generate clear line charts displaying price movements and abnormal returns around these dates compared to baseline market trends.
 
-![K-Quant Data Pipeline Flowchart](docs/diagram.png)
+![K-Quant Data Pipeline Flowchart](docs/System%20Diagram.png)
 
 ## Tech Stack
 
