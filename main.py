@@ -136,7 +136,22 @@ def plot_event_window(window_data, event_date):
     
     plt.tight_layout()
 
-    plt.savefig(f"output/comeback_{event_date}.png")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # os.path.abspath(__file__) finds the absolute path of this program
+    # and os.path.dirname() strips the filename to give just the folder where main.py lives
+
+    output_dir = os.path.join(script_dir, "output")
+    # os.path.join() combines the program's folder path with the name "output" 
+    # so Python knows the exact directory regardless of the operating system
+    
+    os.makedirs(output_dir, exist_ok=True)
+    # os.makedirs() creates the output folder if it doesn't exist yet 
+    #  and exist_ok=True ensures Python won't crash or throw an error if the folder is already there
+
+    file_path = os.path.join(output_dir, f"comeback_{event_date}.png")
+    # os.path.join() builds the final file path by combining the output folder 
+    # with a unique filename containing the user's entered comeback date (example: comeback_2026-03-20.png)
+
     print(f"\nChart saved as: output/comeback_{event_date}.png")
     
     plt.show()
