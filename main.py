@@ -4,6 +4,8 @@ import pandas as pd
 import yfinance as yf
 # Import the yfinance library, which connects to Yahoo Finance to download historical stock prices
 
+import matplotlib.pyplot as plt
+
 tickers = {"HYBE": "352820.KS",
     "JYP": "035900.KQ",
     "YG": "122870.KQ",}
@@ -101,6 +103,47 @@ def get_event_window(df, event_date, window_days=15):
     return window_data
 
 
+
+def plot_event_window(window_data, event_date):
+    # plt.figure() = creates a new drawing canvas and sets its size to 10 inches wide by 5 inches tall
+    plt.figure(figsize=(10, 5))
+
+    # goes through every column (stock ticker) one by one so I can plot them together
+    for column in window_data.columns:
+        plt.plot(window_data.index, window_data[column], marker='o', label=column)
+        # draws a line graph using dates on the x-axis and returns on the y-axis
+        
+    plt.axvline(pd.to_datetime(event_date), color='red', linestyle='--', label='Comeback Date')
+    # draws a red dashed line right on the comeback date to mark the event
+    
+    plt.title(f"K-Pop Stock Reaction Around Comeback: {event_date}", fontsize=14)
+    
+    plt.xlabel("Date", fontsize=12)
+    
+    plt.ylabel("Daily Return (%)", fontsize=12)
+    
+    plt.axhline(0, color='gray', linestyle='-', linewidth=0.8)
+    # draws a gray line at y=0 so I can easily see positive vs. negative returns
+
+    plt.legend()
+    # displays the legend box showing which line/color belongs to which company name
+        
+    
+    plt.grid(True, linestyle=':', alpha=0.6)
+    # dotted grid to make it easier to read values across the chart
+    
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+
+    plt.savefig(f"output/comeback_{event_date}.png")
+    print(f"\nChart saved as: output/comeback_{event_date}.png")
+    
+    plt.show()
+
+
+
+
 if __name__ == "__main__":
   df = fetch_stock_data()
   # Call the function from above and store the result inside df
@@ -121,6 +164,8 @@ if __name__ == "__main__":
     print(comeback_slice.head())
     print()
     print(f"Total trading days captured in this window: {len(comeback_slice)}")
+
+    plot_event_window(comeback_slice, user_date)
         
   except Exception as e:
     print("Check your date format. Make sure it's YYYY-MM-DD and is after 2023 (until today).")
