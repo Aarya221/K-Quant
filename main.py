@@ -24,6 +24,12 @@ def fetch_stock_data():
     # Handles missing values (drops rows where markets were closed or data is missing)
     # to prevent calculation errors later
 
+    if data.empty:
+        print("Could not download stock data. Check your internet connection and try again.")
+        raise SystemExit
+    # yfinance doesn't raise an error when the network is down, it just returns
+    # an empty table, so I checked for that and exit the program instead of crashing
+
     code_to_name = {}
 
     for name, code in tickers.items():
@@ -172,6 +178,7 @@ def analyze_comeback_volatility(volatility_df, event_date, window_days=15):
    print()
    print("(If Volatility Spike is positive, the stock was wilder during the comeback than usual!)")
 
+   #Interpretation of results
    print()
    print("--- Key Takeaways ---")
    print()
@@ -179,15 +186,17 @@ def analyze_comeback_volatility(volatility_df, event_date, window_days=15):
     spike = row["Volatility Spike (%)"]
     baseline = row["Baseline Average Volatility (%)"]
     window_val = row["Comeback Window Volatility (%)"]
-        
-    if spike > 0:
+
+    if pd.isna(spike):
+        print(f"{ticker}: Not enough data yet to measure volatility (needs 20 trading days of history).\n")
+    elif spike > 0:
         print(f"{ticker}: Saw a {spike:.1f}% volatility spike.")
         print(f"  -> Translation: Instead of its usual calm daily price swings (~{baseline:.1f}%),")
         print(f"     its daily movements jumped to ~{window_val:.1f}% as the market reacted to the comeback hype.\n")
     else:
         print(f"{ticker}: Remained calm, dropping by {abs(spike):.1f}% compared to normal baseline behavior.\n")
 
-    #Interpretation of results
+    
 
 
 if __name__ == "__main__":
@@ -200,12 +209,20 @@ if __name__ == "__main__":
   print("--- K-Quant Comeback Window Analyzer ---")
   user_date = input("Enter a comeback date between Jan. 2023 - today (Format: YYYY-MM-DD): ")
 
-  # Checks if the user entered a date outside the dataset range
+  if not user_date.strip():
+    print("No date entered. Please run the program again and enter a date like 2026-03-20.")
+    raise SystemExit
+  # handles the user just pressing Enter without typing anything
+
+  # catches badly formatted dates (like "hello")
   try:
+    user_date = user_date.strip().replace("/", "-")
+    # removes extra spaces and swaps slashes for dashes so the chart filename works
+
     comeback_slice = get_event_window(returns, event_date=user_date, window_days=15)
 
     if len(comeback_slice) == 0:
-       print(f"No data found {user_date}.")
+       print(f"No data found for {user_date}.")
     else:
        print()    
        print(f"Results for {user_date} (Showing preview):")
