@@ -24,29 +24,32 @@ Follow these steps to clone and run the project locally:
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/Aarya221/k-quant.git](https://github.com/Aarya221/k-quant.git)
+   git clone https://github.com/Aarya221/k-quant.git
    cd k-quant
+   ```
 
-## Installing Required Dependencies
+2. **Install the required dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-To install all necessary third-party packages for this project, run the following command in your terminal:
-
-```bash
-pip install -r requirements.txt
-
-Run the script by typing `python3 main.py` in your terminal. (if Python3 throws an error, try `python main.py`)
-
+3. **Run the script:**
+   ```bash
+   python3 main.py
+   ```
+   (If `python3` throws an error, try `python main.py`.)
 
 ## Example Runs & Input/Output
 
 ### Example Startup & Data Preview
 ![Terminal Startup and Data Preview](output/terminal_startup_preview.png)
 
-Here are four test cases demonstrating the project running with different K-pop release dates as inputs, along with the corresponding expected outputs.
+Here are four test cases showing the project running with different K-pop release dates as inputs, along with the expected outputs.
 
 ### Test Case 1: BTS — *Arirang* (HYBE)
 * **Input:** `2026-03-20`
 * **Expected Output:**
+
   ![BTS Comeback Terminal Output](output/terminal_bts_2026-03-20.png)
   ![BTS Comeback Chart](output/comeback_2026-03-20.png)
 
@@ -54,7 +57,8 @@ Here are four test cases demonstrating the project running with different K-pop 
 
 ### Test Case 2: TWICE — *THIS IS FOR* (JYP)
 * **Input:** `2025-07-11`
-* **Expected Output:** 
+* **Expected Output:**
+
   ![TWICE Terminal Output](output/terminal_twice_2025-07-11.png)
   ![TWICE Comeback Chart](output/comeback_2025-07-11.png)
 
@@ -63,6 +67,7 @@ Here are four test cases demonstrating the project running with different K-pop 
 ### Test Case 3: ROSÉ — *rosie* (YG)
 * **Input:** `2024-12-06`
 * **Expected Output:**
+
   ![ROSÉ Terminal Output](output/terminal_rose_2024-12-06.png)
   ![ROSÉ Comeback Chart](output/comeback_2024-12-06.png)
 
@@ -70,10 +75,10 @@ Here are four test cases demonstrating the project running with different K-pop 
 
 ### Test Case 4: Stray Kids — *ROCK-STAR* (JYP)
 * **Input:** `2023-11-10`
-* **Expected Output:** 
+* **Expected Output:**
+
   ![Stray Kids Terminal Output](output/terminal_straykids_2023-11-10.png)
   ![Stray Kids Comeback Chart](output/comeback_2023-11-10.png)
-
 
 ## Roadmap
 
@@ -89,4 +94,4 @@ Here are four test cases demonstrating the project running with different K-pop 
 
 ## Author
 
-Aarya (https://github.com/Aarya221))
+Aarya ([GitHub](https://github.com/Aarya221))
