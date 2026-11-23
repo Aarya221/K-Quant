@@ -1,3 +1,6 @@
+import os 
+# lets Python interact with user's computer operating system
+
 import pandas as pd
 # Import the pandas library, which is used for organizing and analyzing data in tables (DataFrames)
 
@@ -5,6 +8,11 @@ import yfinance as yf
 # Import the yfinance library, which connects to Yahoo Finance to download historical stock prices
 
 import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings("ignore")
+# Tells Python to hide noisy background warnings from external libraries like yfinance
+
 
 tickers = {"HYBE": "352820.KS",
     "JYP": "035900.KQ",
@@ -152,11 +160,72 @@ def plot_event_window(window_data, event_date):
     # os.path.join() builds the final file path by combining the output folder 
     # with a unique filename containing the user's entered comeback date (example: comeback_2026-03-20.png)
 
-    print(f"\nChart saved as: output/comeback_{event_date}.png")
+    plt.savefig(file_path)
+
+    print(f"Chart saved as: output/comeback_{event_date}.png")
     
     plt.show()
 
 
+def analyze_comeback_volatility(volatility_df, event_date, window_days=15):
+   print()
+   print(f"--- Comeback Volatility Impact Analysis ({event_date}) ---")
+   # Compares stock volatility during a comeback window vs. the overall baseline volatility.
+    
+   vol_slice = get_event_window(volatility_df, event_date, window_days)
+   # Slice the volatility table around the event window using my existing function
+    
+   if len(vol_slice) == 0:
+    print(f"No volatility data found for {event_date}.")
+    return
+
+    
+   window_avg = vol_slice.mean()
+   # Calculate average volatility during the comeback window
+   # .mean() is a method from the pandas library 
+    
+
+   baseline_avg = volatility_df.mean()
+   # Calculate average baseline volatility across all data from 2023 to today
+    
+
+   comparison_df = pd.DataFrame({"Comeback Window Volatility (%)": window_avg,
+        "Baseline Average Volatility (%)": baseline_avg,
+    })
+   # Prints a comparison table for each agency
+    
+
+   comparison_df["Volatility Spike (%)"] = (
+      (comparison_df["Comeback Window Volatility (%)"] - comparison_df["Baseline Average Volatility (%)"]) 
+      / comparison_df["Baseline Average Volatility (%)"]
+    ) * 100
+   # Calculate the percentage difference to see how much wilder it got
+   # This formula calculates the percentage increase (or decrease) between
+   # the comeback window volatility and the normal baseline volatility.
+   # if positive --> agency's stock was __% higher than its average behavior
+   # if negative --> agency's stock became less volatile during event window
+    
+   print(comparison_df.round(2))
+   # displays table with numbers rounded to 2 decimal places
+   print()
+   print("(If Volatility Spike is positive, the stock was wilder during the comeback than usual!)")
+
+   print()
+   print("--- Key Takeaways ---")
+   print()
+   for ticker, row in comparison_df.iterrows():
+    spike = row["Volatility Spike (%)"]
+    baseline = row["Baseline Average Volatility (%)"]
+    window_val = row["Comeback Window Volatility (%)"]
+        
+    if spike > 0:
+        print(f"{ticker}: Saw a {spike:.1f}% volatility spike.")
+        print(f"  -> Translation: Instead of its usual calm daily price swings (~{baseline:.1f}%),")
+        print(f"     its daily movements jumped to ~{window_val:.1f}% as the market reacted to the comeback hype.\n")
+    else:
+        print(f"{ticker}: Remained calm, dropping by {abs(spike):.1f}% compared to normal baseline behavior.\n")
+
+    #Interpretation of results
 
 
 if __name__ == "__main__":
@@ -174,13 +243,20 @@ if __name__ == "__main__":
   try:
     comeback_slice = get_event_window(returns, event_date=user_date, window_days=15)
 
-    print()    
-    print(f"Results for {user_date} (Showing preview):")
-    print(comeback_slice.head())
-    print()
-    print(f"Total trading days captured in this window: {len(comeback_slice)}")
+    if len(comeback_slice) == 0:
+       print(f"No data found {user_date}.")
+    else:
+       print()    
+       print(f"Results for {user_date} (Showing preview):")
+       print(comeback_slice.head())
+       print()
+       print(f"Total trading days captured in this window: {len(comeback_slice)}")
 
-    plot_event_window(comeback_slice, user_date)
+       analyze_comeback_volatility(volatility, user_date, window_days=15)
+
+       plot_event_window(comeback_slice, user_date)
+       
         
   except Exception as e:
+    print(f"An error occurred: {e}")
     print("Check your date format. Make sure it's YYYY-MM-DD and is after 2023 (until today).")
