@@ -20,6 +20,17 @@ Fetches historical daily stock prices including open, high, low, close, and volu
 
 ## Setup & Running Instructions
 
+### Prerequisites
+
+Before you start, make sure you have the following installed:
+
+- **Python 3** (`pip` comes with it)
+- **Git**
+
+You'll also need an internet connection, since the script downloads stock data from Yahoo Finance.
+
+### Steps
+
 Follow these steps to clone and run the project locally:
 
 1. **Clone the repository:**
